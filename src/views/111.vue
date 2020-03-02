@@ -1,8 +1,36 @@
+Skip to content
+ 
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@YYw1899 
+Learn Git and GitHub without any code!
+Using the Hello World guide, you’ll start a branch, write comments, and open a pull request.
+
+Read the guide
+
+YYw1899
+/
+sellapp
+ Unwatch 1
+ Star 0  Fork 0
+ Code  Issues 0  Pull requests 0  Actions  Projects 0  Wiki  Security  Insights  Settings
+Branch: master 
+sellapp/src/views/Goods.vue
+Find file Copy path
+Fetching contributors…
+
+182 lines (179 sloc)  4.18 KB
+RawBlameHistory
+    
 <template>
   <div id="goods">
     <!-- left -->
     <div class="left">
-
       <ul class="content">
         <p v-for="(v,i) in name" :key="i" :class="{bcg:num2==i}" @click="leftclick(i)">
           <img src="../assets/imges/decrease_1@2x.png" style="width:10px;" v-show="v.type==1">
@@ -13,29 +41,23 @@
       </ul>
     </div>
     <!-- right -->
-    <div class="right wrapper ">
+    <div class="right">
       <ul class="content">
-        <!-- 获取分类 -->
-        <div v-for="(v,i1) in name" :key="i1" :id="i1">
+        <div v-for="(v,i) in name" :key="i" :id="i" @click="rightclick(i)">
           <p>{{v.name}}</p>
-          <!-- 获取分类中美食种类 -->
-          <div class="content1" v-for="(val,i2) in v.foods" :key="i2">
+          <div class="content1" v-for="(val,index) in v.foods" :key="index">
             <div class="box">
               <img :src="val.image">
               <div class="content_box">
                 <h6>{{val.name}}</h6>
                 <span>月销售{{val.sellCount}}份</span><span>好评率{{val.rating}}%</span>
                 <div class="price">
-                  <strong>
-                    ￥{{val.price}}
-                    <span style="color:#ccc; text-decoration:line-through;" v-show="val.oldPrice!=0">￥{{val.oldPrice}}</span>
-                  </strong>
+                  <strong>￥{{val.price}}</strong>
                   <div>
                     <!-- 减 -->
-                    <button v-show="val.num>0" class="reduce" @click="change(-1,i1,i2)">-</button>
-                    <span v-show="val.num>0">{{val.num}}</span>
-                    <!-- 加 -->
-                    <button class="addnum" @click="change(1,i1,i2)">+</button>
+                    <button v-show="num<1" class="reduce">-</button>
+                    <span v-show="num<1">{{num}}</span>
+                    <button class="addnum">+</button>
                   </div>
                 </div>
               </div>
@@ -43,9 +65,6 @@
           </div>
         </div>
       </ul>
-      <div class="fixed">
-        <router-view></router-view>
-      </div>
     </div>
   </div>
 </template>
@@ -56,40 +75,26 @@ import Bscroll from 'better-scroll';
 export default {
   data () {
     return {
+      name: '',
+      num: 0,
       num2: 0,
     }
   },
   methods: {
-    change (n, i1, i2) {
-      var num = this.name;
-      var num_new = num[i1].foods[i2].num + n;
-      this.$store.commit('changeNum', { num_new, i1, i2 });
-    },
     leftclick (n) {
       this.num2 = n;
       this.rightscroll.scrollToElement(document.getElementById(n), 500);
     },
+    rightclick (n) {
+      this.num2 = n;
+      this.leftscroll.scrollToElement(document.getElementById(n), 500);
+    }
   },
   created () {
     getgoods().then(res => {
-      this.$store.commit('changeNamelist', res.data.data);
-      // console.log(res.data.data)
+      this.name = res.data.data;
+      console.log(res.data)
     })
-  },
-  computed: {
-    name () {
-      return this.$store.state.namelist;
-    },
-    getDivsum () {
-      var arr = [];
-      var sum = 0;
-      for (let i = 0; i < this.name.length; i++) {
-        var height = document.getElementById(i).offsetHeight;
-        arr.push({ min: sum, max: sum + height, index: i });
-        sum += height;
-      }
-      return arr;
-    },
   },
   mounted () {
     this.leftscroll = new Bscroll(document.querySelector('.left'), {
@@ -97,29 +102,16 @@ export default {
     });
     this.rightscroll = new Bscroll(document.querySelector('.right'), {
       click: true,
-      probeType: 3,
     });
-    this.rightscroll.on('scroll', ({ y }) => {
-      for (let i = 0; i < this.getDivsum.length; i++) {
-        if (this.getDivsum[i].min <= Math.abs(y) && Math.abs(y) < this.getDivsum[i].max) {
-          this.num2 = this.getDivsum[i].index;
-          return;
-        }
-      }
-    })
   },
 }
 </script>
 
 <style lang="less">
-.fixed {
-  position: fixed;
-  bottom: 50px;
-  left: 0;
-}
 #goods {
-  flex: 1;
+  border-top: 2px solid #dadde2;
   display: flex;
+  flex: 1;
   .left {
     width: 70px;
     background-color: #f4f5f7;
@@ -133,8 +125,6 @@ export default {
     }
     ul {
       padding: 0;
-      padding-top: 20px;
-      margin: 0;
       div {
         height: 30px;
       }
@@ -145,7 +135,6 @@ export default {
     overflow: auto;
     ul {
       padding: 0;
-      margin-top: 0;
     }
     p {
       padding: 0;
@@ -207,7 +196,6 @@ export default {
                 line-height: 20px;
                 display: inline-block;
                 text-align: center;
-                border: 0;
               }
             }
           }
@@ -220,3 +208,15 @@ export default {
   }
 }
 </style>
+© 2020 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About

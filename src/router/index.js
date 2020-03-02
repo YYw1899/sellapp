@@ -9,9 +9,11 @@ export default new VueRouter({
       // 跳转到index
       path: '/', component: Index, children: [
         // 默认跳转到goods
-        { path: '/', component: () => import('../views/Goods.vue') },
-        // 跳转到goods
-        { path: '/goods', component: () => import('../views/Goods.vue') },
+        {
+          path: '/', component: () => import('../views/Goods.vue'), children: [
+            { path: '/', component: () => import('../views/ShopCar.vue') },
+          ]
+        },
         // 跳转到shop
         { path: '/Shop', component: () => import('../views/Shop.vue') },
         // 跳转到evaluat
